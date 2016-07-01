@@ -1,0 +1,27 @@
+version: '2'
+services:
+  dnsdock:
+    container_name: dnsdock
+    image: tonistiigi/dnsdock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 172.17.42.1:53:53/udp
+  continuous:
+    container_name: continuous
+    mem_limit: 4000000000
+    privileged: true
+    hostname: continuous
+    network_mode: bridge
+    tty: true
+    image: continuousphp/cphp:7.0.4
+    environment:
+      - DNSDOCK_NAME=continuous
+      - DNSDOCK_IMAGE=continuousphp
+      - DNSDOCK_TTL=10
+    volumes:
+      - .:/home/cphp/feature-toogle
+    ports:
+      - "8000:80"
+      - "2222:22"
+    restart: always
